@@ -7,7 +7,7 @@ public class Board {
 	static final int BOARD_WIDTH = 16;
 	static final int BLOCK_RANGE_Y = 8;
 	private DrawnItem ball = new Ball("Åú", 8, 16, 1, 1);
-	private DrawnItem paddle = new Paddle("Å†", 0, BOARD_HEIGHT - 2, 1, 3);
+	private DrawnItem paddle = new Paddle("Å†", 7, BOARD_HEIGHT - 2, 1, 3);
 	private String[][] defaultField = {
 			{ "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°" },
 			{ "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°", "Å°" },
