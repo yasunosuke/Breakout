@@ -72,37 +72,133 @@ public class Board {
 			e.printStackTrace();
 		}
 		
+//		上の壁
+		for(int i = 0; i < BOARD_WIDTH + 2; i++) {
+			System.out.print("□");
+		}
+		System.out.println("");
+		
 		for(int i = 0; i < BOARD_HEIGHT; i++) {
+//			左の壁
+			System.out.print("□");
 			for(int j = 0; j < BOARD_WIDTH; j++) {
-//				switch(defaultField[i][j]) {
-//				case "B": System.out.print("■"); break;
-//				case "Ball": System.out.print("●"); break;
-//				default: System.out.print(" "); break;
-//				}
 				System.out.print(screen[i][j]);
 			}
-			System.out.println("");
+//			右の壁
+			System.out.println("□");
+		}
+//		下の壁
+		for(int i = 0; i < BOARD_WIDTH + 2; i++) {
+			System.out.print("□");
+		}
+		System.out.println("");
+		
+	}
+	
+	public void updateBallPosition(Velocity v) {
+		this.ball.setPositionX(this.ball.getPositionX() + v.getVelocityX());
+		this.ball.setPositionY(this.ball.getPositionY() + v.getVelocityY());
+		
+		int ballPositionX = this.ball.getPositionX();
+		int ballPositionY = this.ball.getPositionY();
+		
+		int paddlePositionX = this.paddle.getPositionX();
+		int paddlePositionY = this.paddle.getPositionY();
+		
+//		壁とのあたり判定
+		if(ballPositionX >= BOARD_WIDTH - 1) {
+			v.setVelocityX(-1);
+		}
+		if(ballPositionX <= 0) {
+			v.setVelocityX(1);
+		}
+		if(ballPositionY >= BOARD_HEIGHT - 1) {
+			v.setVelocityY(-1);
+		}
+		if(ballPositionY <= 0) {
+			v.setVelocityY(1);
+		}
+		
+//		パドルとの当たり判定
+		if((ballPositionY <= paddlePositionY) 
+				&& (ballPositionY >= paddlePositionY - 1) 
+				&& (ballPositionX >= paddlePositionX) 
+				&& (ballPositionX < paddlePositionX + this.paddle.getWIDTH())) {
+			v.setVelocityY(-1);
+		}
+		
+//		ブロックとの当たり判定
+		for(int i = -1; i <= 1; i++) {
+			int x = ballPositionX + i;
+			if(x < 0 || x >= BOARD_WIDTH) {
+				continue;
+			}
+			
+			if(this.field[ballPositionY][x].equals("■")) {
+			this.field[ballPositionY][x] = "　";
+			v.setVelocityY(1);
+		    }
 		}
 		
 	}
 	
-	public DrawnItem getBall() {
-		return ball;
+//	ボールを追跡するためにパドルの位置を更新するメソッド
+	public void updatePaddlePosition() {
+//		パドルの壁との当たり判定
+//		ボールとパドルの真ん中を合わせる
+		int nextPaddlePositionX = this.ball.getPositionX() - 1;
+		if(nextPaddlePositionX + this.paddle.getWIDTH() - 1 >= BOARD_WIDTH) {
+			this.paddle.setPositionX(nextPaddlePositionX - 1);
+		} else if(nextPaddlePositionX < 0) {
+			this.paddle.setPositionX(0);
+		} else {
+			this.paddle.setPositionX(nextPaddlePositionX);
+		}
+		
+		
 	}
-
-	public DrawnItem getPaddle() {
-		return paddle;
+	
+	public boolean isFailed() {
+		if(this.ball.getPositionY() == BOARD_HEIGHT - 1) {
+			return true;
+		}
+		return false;
 	}
+	
+	public boolean isCompleted() {
 
-	public void drawBlock() {
 		for(int i = 0; i < BLOCK_RANGE_Y; i++) {
 			for(int j = 0; j < BOARD_WIDTH; j++) {
-				defaultField[i][j] = "B";
+				if(this.field[i][j].equals("■")) {
+					return false;
+				}
 			}
 		}
+		return true;
 	}
 	
-	private void moveBall() {
+	public int countBlocks() {
 		
+		int defaultBlocks = 0;
+		for(int i = 0; i < BLOCK_RANGE_Y; i++) {
+			for(int j = 0; j < BOARD_WIDTH; j++) {
+				if(this.defaultField[i][j].equals("■")) {
+					defaultBlocks++;
+				}
+			}
+		}
+		
+		int brokenBlocks = 0;
+		for(int i = 0; i < BLOCK_RANGE_Y; i++) {
+			for(int j = 0; j < BOARD_WIDTH; j++) {
+				if(this.field[i][j].equals("■")) {
+					brokenBlocks++;
+				}
+			}
+		}
+		
+		return defaultBlocks - brokenBlocks;
 	}
+	
+	
 }
